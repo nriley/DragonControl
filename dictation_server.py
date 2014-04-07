@@ -1,33 +1,40 @@
 import natlink
 import rpyc
 import sys
+import win32com.client
+
+def Word():
+    return win32com.client.Dispatch('Word.Application')
 
 class DragonService(rpyc.Service):
-	__slots__ = ('mic_state_callback',)
+    def on_connect(self):
+        natlink.natConnect(True)
 
-	def on_connect(self):
-		natlink.natConnect(True)
-		self.mic_state_callback = lambda state: None
-		natlink.setChangeCallback(self.change_callback)
+    def on_disconnect(self):
+        natlink.natDisconnect()
 
-	def on_disconnect(self):
-		natlink.natDisconnect()
+    def exposed_get_mic_state(self):
+        return natlink.getMicState()
 
-	def exposed_get_mic_state(self):
-		return natlink.getMicState()
+    def exposed_set_mic_state(self, state):
+        natlink.setMicState(state)
 
-	def exposed_set_mic_state(self, state):
-		natlink.setMicState(state)
+    def exposed_activate_word(self):
+        shell = win32com.client.Dispatch("WScript.Shell")
+        shell.AppActivate('Word')
+        shell.AppActivate(' - Word')
+        word = Word()
+        word.Visible = True
+        documents = word.Documents
+        if len(documents) == 0:
+            documents.Add()
 
-	def exposed_set_mic_state_callback(self, callback):
-		self.mic_state_callback = callback
-
-	def change_callback(self, what, how):
-		print >> sys.stderr, what, how
-		if what == 'mic':
-			self.mic_state_callback(how)
+    def exposed_get_word_document_contents(self):
+        document = Word().Documents[0]
+        document.Select()
+        return document.Content.Text
 
 if __name__ == '__main__':
-	from rpyc.utils.server import OneShotServer
-	while True:
-		OneShotServer(DragonService, port=9999).start()
+    from rpyc.utils.server import OneShotServer
+    while True:
+        OneShotServer(DragonService, port=9999).start()

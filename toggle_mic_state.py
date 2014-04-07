@@ -9,6 +9,7 @@ if __name__ == '__main__':
 
 	if initial_mic_state != 'on':
 		c.root.set_mic_state('on')
+		c.root.activate_word()
 		message = 'Dragon is listening.'
 		subprocess.call(['/usr/local/bin/appswitch', '-hi', 'com.vmware.fusion'])
 		subprocess.call(['/usr/local/bin/appswitch', '-si', 'com.vmware.fusion'])
