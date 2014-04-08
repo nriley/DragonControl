@@ -32,7 +32,7 @@ class DragonService(rpyc.Service):
     def exposed_get_word_document_contents(self):
         document = Word().Documents[0]
         document.Select()
-        return document.Content.Text
+        return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n')
 
 if __name__ == '__main__':
     from rpyc.utils.server import OneShotServer
