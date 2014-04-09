@@ -30,9 +30,10 @@ class TransferDictationService(Cocoa.NSObject):
             types = pboard.types()
             if Cocoa.NSStringPboardType not in types:
                 return
-            dictation.start_in_foreground()
-            s = pboard.stringForType_(Cocoa.NSStringPboardType)
-            word_dictation_document.set_contents(s)
+            with dictation.service:
+                dictation.start_in_foreground()
+                oldString = pboard.stringForType_(Cocoa.NSStringPboardType)
+                word_dictation_document.set_contents(oldString)
         except:
             import traceback
             Cocoa.NSLog(traceback.format_exc())
