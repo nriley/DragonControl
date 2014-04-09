@@ -1,6 +1,17 @@
 .DS_Store
+
+# virtualenv
 .Python
 bin/
 include/
 lib/
+
+# setuptools/distutils/py2app
+build/
+dist/
+
+# Emacs
 *~
+
+# Python
+*.pyc
