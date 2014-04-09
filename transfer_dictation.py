@@ -20,6 +20,8 @@ class TransferDictationService(Cocoa.NSObject):
         #             "Pasteboard couldn't give string."
         #         ))
             newString = get_word_document_contents()
+            if not newString:
+                return u'There is no dictated text to transfer.'
 
             types = [Cocoa.NSStringPboardType]
             pboard.declareTypes_owner_([Cocoa.NSStringPboardType], None)
