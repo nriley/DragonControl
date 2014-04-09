@@ -19,7 +19,7 @@ class TransferDictationService(Cocoa.NSObject):
         #             "Error: Pasteboard doesn't contain a string.",
         #             "Pasteboard couldn't give string."
         #         ))
-            newString = get_word_document_contents()
+            newString = get_word_document_contents().decode('utf-8')
             if not newString:
                 return u'There is no dictated text to transfer.'
 
