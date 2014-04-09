@@ -21,6 +21,7 @@ plist = dict(
             # NSSendTypes=[
             #     "NSStringPboardType",
             # ],
+            CFBundleVersion="1.0.0",
         ),
     ],
 )
