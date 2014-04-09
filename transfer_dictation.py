@@ -1,31 +1,38 @@
+# Testing service:
+# killall 'Transfer Dictation'; python setup.py py2app && touch ~/Library/Services && open -a TextEdit
+
 import Cocoa
 import objc
+import dictation
+import word_dictation_document
 from PyObjCTools import AppHelper
-from get_word_document_contents import get_word_document_contents
 
 def serviceSelector(fn): return objc.selector(fn, signature=b"v@:@@o^@")
 
 class TransferDictationService(Cocoa.NSObject):
     @serviceSelector
-    def transferDictation_userData_error_(self, pboard, data, err):
-
+    def receiveDictation_userData_error_(self, pboard, data, err):
         try:
-        #     types = pboard.types()
-        #     pboardString = None
-        #     if Cocoa.NSStringPboardType in types:
-        #         pboardString = pboard.stringForType_(Cocoa.NSStringPboardType)
-        #     if pboardString is None:
-        #         return ERROR(Cocoa.NSLocalizedString(
-        #             "Error: Pasteboard doesn't contain a string.",
-        #             "Pasteboard couldn't give string."
-        #         ))
-            newString = get_word_document_contents().decode('utf-8')
+            newString = word_dictation_document.get_contents()
             if not newString:
                 return u'There is no dictated text to transfer.'
 
             types = [Cocoa.NSStringPboardType]
             pboard.declareTypes_owner_([Cocoa.NSStringPboardType], None)
             pboard.setString_forType_(newString, Cocoa.NSStringPboardType)
+        except:
+            import traceback
+            Cocoa.NSLog(traceback.format_exc())
+
+    @serviceSelector
+    def sendDictation_userData_error_(self, pboard, data, err):
+        try:
+            types = pboard.types()
+            if Cocoa.NSStringPboardType not in types:
+                return
+            dictation.start_in_foreground()
+            s = pboard.stringForType_(Cocoa.NSStringPboardType)
+            word_dictation_document.set_contents(s)
         except:
             import traceback
             Cocoa.NSLog(traceback.format_exc())

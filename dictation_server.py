@@ -34,6 +34,11 @@ class DragonService(rpyc.Service):
         document.Select()
         return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n')
 
+    def exposed_set_word_document_contents(self, contents):
+        word = Word()
+        word.Documents[0].Content.Text = contents
+        word.Selection.GoTo(-1, 0, 0, r'\EndOfDoc')
+
 if __name__ == '__main__':
     from rpyc.utils.server import OneShotServer
     while True:

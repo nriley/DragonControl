@@ -4,13 +4,14 @@ import py2app
 plist = dict(
     CFBundleIdentifier="net.sabi.TransferDictationService",
     CFBundleName="Transfer Dictation",
+    CFBundleVersion="1.0.0",
     LSBackgroundOnly=1,
     NSServices=[
         dict(
             NSMenuItem=dict(
-                default="Transfer Dictation",
+                default="Receive Dictation",
             ),
-            NSMessage="transferDictation",
+            NSMessage="receiveDictation",
             NSPortName="Transfer Dictation",
             NSRequiredContext=dict(
                 NSServiceCategory="public.text"
@@ -18,10 +19,19 @@ plist = dict(
             NSReturnTypes=[
                 "NSStringPboardType",
             ],
-            # NSSendTypes=[
-            #     "NSStringPboardType",
-            # ],
-            CFBundleVersion="1.0.0",
+        ),
+        dict(
+            NSMenuItem=dict(
+                default="Send Dictation",
+            ),
+            NSMessage="sendDictation",
+            NSPortName="Transfer Dictation",
+            NSRequiredContext=dict(
+                NSServiceCategory="public.text"
+            ),
+            NSSendTypes=[
+                "NSStringPboardType",
+            ],
         ),
     ],
 )
