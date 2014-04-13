@@ -39,7 +39,24 @@ class DragonService(rpyc.Service):
         word.Documents[0].Content.Text = contents
         word.Selection.GoTo(-1, 0, 0, r'\EndOfDoc')
 
+def startNatSpeak():
+    import natlinkstatus
+    import os
+    status = natlinkstatus.NatlinkStatus()
+    natspeak_exe_path = os.path.join(
+        status.getDNSInstallDir(), 'Program', 'natspeak.exe')
+    os.startfile(natspeak_exe_path)
+
+    import time
+    while not natlink.isNatSpeakRunning():
+        time.sleep(1)
+
 if __name__ == '__main__':
+    # check that DNS is running; if we use natConnect() without a UI,
+    # it starts DNS in a captive mode, without systemwide speech recognition
+    if not natlink.isNatSpeakRunning():
+        startNatSpeak()
+
     from rpyc.utils.server import OneShotServer
     while True:
         OneShotServer(DragonService, port=9999).start()
