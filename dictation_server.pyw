@@ -1,9 +1,15 @@
 import natlink
 import rpyc
+import win32api
+import win32con
 import win32com.client
 
 def Word():
     return win32com.client.Dispatch('Word.Application')
+
+def wake_display():
+    win32api.SendMessage(win32con.HWND_BROADCAST, win32con.WM_SYSCOMMAND,
+                         win32con.SC_MONITORPOWER, -1)
 
 class DragonService(rpyc.Service):
     def on_connect(self):
@@ -17,6 +23,7 @@ class DragonService(rpyc.Service):
 
     def exposed_set_mic_state(self, state):
         natlink.setMicState(state)
+        wake_display()
 
     def exposed_activate_word(self):
         shell = win32com.client.Dispatch("WScript.Shell")
@@ -27,6 +34,7 @@ class DragonService(rpyc.Service):
         documents = word.Documents
         if len(documents) == 0:
             documents.Add()
+        wake_display()
 
     def exposed_get_word_document_contents(self):
         document = Word().Documents[0]
