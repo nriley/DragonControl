@@ -35,8 +35,10 @@ class DragonService(rpyc.Service):
 
     def exposed_set_word_document_contents(self, contents):
         word = Word()
+        word.ScreenUpdating = False
         word.Documents[0].Content.Text = contents
         word.Selection.GoTo(-1, 0, 0, r'\EndOfDoc')
+        word.ScreenUpdating = True
 
 def startNatSpeak():
     import natlinkstatus
