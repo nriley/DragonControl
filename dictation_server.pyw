@@ -1,6 +1,5 @@
 import natlink
 import rpyc
-import sys
 import win32com.client
 
 def Word():
