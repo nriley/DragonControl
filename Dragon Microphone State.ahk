@@ -10,4 +10,9 @@ If 0 <> 1
 If 1 = on
 	ExitApp
 else
-	Progress, y0 zh0 ctFF0000 cw000000 fm8 b0 h20 zy4, , Dragon Not Listening, , Tahoma
+	Loop {
+		Progress, y0 zh0 ctFF0000 cw000000 fm8 b0 h20 zy4, , Dragon Not Listening, , Tahoma
+		WinWaitNotActive, ahk_class OpusApp
+		Progress, Off
+		WinWaitActive, ahk_class OpusApp
+	}
