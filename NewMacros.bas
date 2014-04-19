@@ -25,8 +25,11 @@ Sub AutoNew()
         ActiveWindow.View.Type = wdNormalView
     End If
     ' If window isn't maximized, ribbon doesn't collapse fully.
-    Application.CommandBars("Ribbon").Visible = False
-    ' Hide the horizontal scroll bar too.
+    ActiveWindow.WindowState = wdWindowStateMaximize
+    ' Use full screen mode since we can control it from VBA.
+    ActiveWindow.View.FullScreen = True
+    ' Wrap to window and hide the horizontal scroll bar.
+    ActiveWindow.View.WrapToWindow = True
     ActiveWindow.DisplayHorizontalScrollBar = False
 End Sub
 
