@@ -7,7 +7,7 @@ __all__ = ['get_contents', 'set_contents', 'clear_contents']
 
 def get_contents():
     with dictation.service as s:
-        return s.get_word_document_contents().strip()
+        return s.get_word_document_contents().rstrip()
 
 def set_contents(contents):
     with dictation.service as s:
