@@ -31,6 +31,7 @@ if __name__ == '__main__':
         AHK_EXE = autohotkeyactions.ahk_is_active()
 
         natlink.natConnect(True)
+        natlink_change('mic', natlink.getMicState())
         natlink.setChangeCallback(natlink_change)
         win32gui.PumpMessages()
     except:
