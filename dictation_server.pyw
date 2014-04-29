@@ -25,7 +25,15 @@ class DragonService(rpyc.Service):
         return natlink.getMicState()
 
     def exposed_set_mic_state(self, state):
-        natlink.setMicState(state)
+        try:
+            natlink.setMicState(state)
+        except natlink.NatError:
+            if state != 'on':
+                raise
+            # An error is expected if using a remote microphone, as it can't be
+            # enabled from the server side:
+            # NatError: A SRERR_VALUEOUTOFRANGE error occurred calling
+            # IDgnSREngineControl::SetMicState from DragCode.cpp 2249.
         wake_display()
 
     def exposed_activate_word(self):
