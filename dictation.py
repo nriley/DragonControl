@@ -12,7 +12,7 @@ class _Service(object):
 
     def __enter__(self):
         if self.connection is None:
-            self.connection = rpyc.connect('shirley7', 9999)
+            self.connection = rpyc.connect('shirley7.local', 9999)
         try:
             self.connection.ping(timeout=1)
         except:
