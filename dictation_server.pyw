@@ -1,3 +1,5 @@
+import ctypes
+from ctypes import wintypes
 import natlink
 import os
 import rpyc
@@ -6,6 +8,7 @@ import sys
 import win32api
 import win32con
 import win32com.client
+import win32gui
 
 def Word():
     return win32com.client.Dispatch('Word.Application')
@@ -13,6 +16,30 @@ def Word():
 def wake_display():
     win32api.SendMessage(win32con.HWND_BROADCAST, win32con.WM_SYSCOMMAND,
                          win32con.SC_MONITORPOWER, -1)
+
+class APPBARDATA(ctypes.Structure):
+    _fields_ = [('cbSize', wintypes.DWORD),
+                ('hWnd', wintypes.HANDLE),
+                ('uCallbackMessage', wintypes.UINT),
+                ('uEdge', wintypes.UINT),
+                ('rc', wintypes.RECT),
+                ('lParam', wintypes.LPARAM)]
+
+    def __repr__(self):
+        return '<APPBARDATA: cbSize %d hWnd %d lParam %d>' % (
+            self.cbSize, self.hWnd, self.lParam)
+
+ABM_SETSTATE = 0xa
+
+def set_taskbar_autohide(on):
+    appbarData = APPBARDATA(
+            cbSize=ctypes.sizeof(APPBARDATA),
+            hWnd=win32gui.FindWindow('Shell_TrayWnd', ''),
+            uCallbackMessage=0,
+            uEdge=0,
+            rc=wintypes.RECT(0, 0, 0, 0),
+            lParam=1 if on else 0)
+    ctypes.windll.shell32.SHAppBarMessage(ABM_SETSTATE, ctypes.byref(appbarData))
 
 class DragonService(rpyc.Service):
     should_keep_serving = True
@@ -43,6 +70,11 @@ class DragonService(rpyc.Service):
         shell.AppActivate('Word')
         shell.AppActivate(' - Word')
         word = Word()
+        if not word.Visible:
+            # work around Word bug where it mismeasures screen dimensions
+            # if the taskbar is set to autohide
+            set_taskbar_autohide(False)
+            set_taskbar_autohide(True)
         word.Visible = True
         documents = word.Documents
         if len(documents) == 0:
