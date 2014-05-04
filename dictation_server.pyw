@@ -1,6 +1,8 @@
 import natlink
 import os
 import rpyc
+import subprocess
+import sys
 import win32api
 import win32con
 import win32com.client
@@ -76,18 +78,19 @@ def startNatSpeak():
 class MicrophoneStateMonitor(object):
     __slots__ = ('monitor',)
 
-    def __enter__(self):
-        import subprocess, sys
+    SCRIPT_PATH = 'microphone_state_monitor.pyw'
 
+    def __enter__(self):
         devnull = open(os.devnull, 'wb')
         self.monitor = subprocess.Popen([sys.executable,
-                                         'microphone_state_monitor.pyw'],
+                                         self.SCRIPT_PATH],
                                          stdin=subprocess.PIPE,
                                          stdout=devnull, stderr=devnull)
 
     def __exit__(self, *exc_info):
         self.monitor.terminate()
         self.monitor = None
+        subprocess.call([sys.executable, self.SCRIPT_PATH, 'stop'])
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
