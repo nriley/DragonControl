@@ -22,8 +22,14 @@ def get():
 def set():
     set_contents(sys.stdin.read())
 
+def edit():
+    with dictation.service as s:
+        s.set_mic_state('on')
+        s.activate_word()
+        set()
+
 def usage():
-    print >> sys.stderr, 'usage:', sys.argv[0], '[get|set]'
+    print >> sys.stderr, 'usage:', sys.argv[0], '[get|set|edit]'
     sys.exit(1)
 
 if __name__ == '__main__':
@@ -36,6 +42,8 @@ if __name__ == '__main__':
                 get()
             elif command == 'set':
                 set()
+            elif command == 'edit':
+                edit()
             else:
                 usage()
         else:
