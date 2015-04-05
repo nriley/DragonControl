@@ -13,5 +13,5 @@ if __name__ == '__main__':
 			subprocess.call(['/usr/local/bin/appswitch', '-hi', 'com.vmware.fusion'])
 			subprocess.call(['/usr/local/bin/appswitch', '-si', 'com.vmware.fusion'])
 		else:
-			s.set_mic_state('sleeping')
+			s.set_mic_state('off')
 			message = 'Dragon is not listening.'
