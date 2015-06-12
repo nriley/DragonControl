@@ -3,6 +3,8 @@
 import rpyc
 import subprocess
 
+__all__ = ('service', 'switch_to_app', 'show_app', 'start_in_foreground')
+
 class _Service(object):
     __slots__ = ('connection', 'nesting_level')
 
@@ -33,8 +35,24 @@ class _Service(object):
 
 service = _Service()
 
+def appswitch(*args):
+    return subprocess.call(['/usr/local/bin/appswitch'] + list(args)) == 0
+
+DICTATION_APPS = ('com.p5sys.jump.mac.viewer', 'com.vmware.fusion')
+
+def switch_to_app():
+    return any(appswitch('-i', bundle_identifier)
+               for bundle_identifier in DICTATION_APPS)
+
+def show_app():
+    for bundle_identifier in DICTATION_APPS:
+        if appswitch('-hi', bundle_identifier):
+            return appswitch('-si', bundle_identifier)
+    return False
+
 def start_in_foreground():
-    subprocess.call(['/usr/local/bin/appswitch', '-i', 'com.vmware.fusion'])
+    switch_to_app()
+
     with service as s:
         s.set_mic_state('on')
         s.activate_word()
