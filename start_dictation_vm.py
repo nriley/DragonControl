@@ -52,12 +52,14 @@ def vmrun(*args):
 # (my umask is typically 077)
 os.umask(022)
 
-# start VM if needed
+# start or unpause VM if needed
 vm_path = dictation_vm_path()
 vmx_paths = vmrun('list').split('\n')[1:]
-if not any(vmx_path.startswith(vm_path) for vmx_path in vmx_paths):
+if any(vmx_path.startswith(vm_path) for vmx_path in vmx_paths):
+    vmrun('unpause', vm_path) # no way I know of to check if the VM is paused
+else:
 	notify('Starting virtual machine')
-	vmrun('start', dictation_vm_path(), 'nogui')
+	vmrun('start', vm_path, 'nogui')
 
 # wait until the network is available
 while not output('/usr/sbin/scutil', '-r', VM_HOSTNAME).startswith('Reachable'):
