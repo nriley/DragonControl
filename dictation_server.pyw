@@ -8,10 +8,11 @@ import sys
 import win32api
 import win32con
 import win32com.client
+from win32com.client import constants
 import win32gui
 
 def Word():
-    return win32com.client.Dispatch('Word.Application')
+    return win32com.client.gencache.EnsureDispatch('Word.Application')
 
 def wake_display():
     win32api.SendMessage(win32con.HWND_BROADCAST, win32con.WM_SYSCOMMAND,
@@ -144,4 +145,4 @@ if __name__ == '__main__':
             OneShotServer(DragonService, port=9999).start()
 
         # quit Word - try to clear resource leaks
-        Word().Application.Quit(SaveChanges=0) # 0 = wdDoNotSaveChanges
+        Word().Application.Quit(SaveChanges=constants.wdDoNotSaveChanges)
