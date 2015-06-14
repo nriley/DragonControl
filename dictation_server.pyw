@@ -142,3 +142,6 @@ if __name__ == '__main__':
         from rpyc.utils.server import OneShotServer
         while DragonService.should_keep_serving:
             OneShotServer(DragonService, port=9999).start()
+
+        # quit Word - try to clear resource leaks
+        Word().Application.Quit(SaveChanges=0) # 0 = wdDoNotSaveChanges
