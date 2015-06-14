@@ -71,11 +71,11 @@ class DragonService(rpyc.Service):
         shell.AppActivate('Word')
         shell.AppActivate(' - Word')
         word = Word()
-        if not word.Visible:
-            # work around Word bug where it mismeasures screen dimensions
-            # if the taskbar is set to autohide
-            set_taskbar_autohide(False)
-            set_taskbar_autohide(True)
+        # if not word.Visible:
+        #     # work around Word bug where it mismeasures screen dimensions
+        #     # if the taskbar is set to autohide
+        #     set_taskbar_autohide(False)
+        #     set_taskbar_autohide(True)
         word.Visible = True
         documents = word.Documents
         if len(documents) == 0:
