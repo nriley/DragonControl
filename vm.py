@@ -6,7 +6,7 @@ import subprocess
 import sys
 import time
 
-__all__ = ('vmrun',)
+__all__ = ('osascript', 'vmrun', 'wait_for_rdp')
 
 HOME = os.path.expanduser('~')
 
@@ -37,10 +37,13 @@ VM_PATH = dictation_vm_path()
 def output(*args):
 	return subprocess.check_output(args).rstrip('\n')
 
+def osascript(script, *args):
+	return subprocess.check_output(['/usr/bin/osascript',
+		os.path.join(os.path.dirname(os.path.abspath(__file__)),
+				     script + '.scpt')] + list(args))
+
 def notify(message):
-	subprocess.check_output(('osascript',
-		(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Notify.scpt')),
-		'Starting dictation', message))
+	osascript('Notify', 'Dictation', message)
 
 VMRUN_PATH = os.path.join(
 	output('/usr/local/bin/launch', '-ni', 'com.vmware.fusion'),
@@ -53,15 +56,7 @@ def vmrun(*args):
 		return output(VMRUN_PATH, args[0]).split('\n')[1:]
 	return output(VMRUN_PATH, args[0], VM_PATH, *args[1:])
 
-def ensure_rdp():
-	# start or unpause VM if needed
-	vmx_paths = vmrun('list')
-	if any(vmx_path.startswith(VM_PATH) for vmx_path in vmx_paths):
-	    vmrun('unpause') # no way I know of to check if the VM is paused
-	else:
-		notify('Starting virtual machine')
-		vmrun('start', 'nogui')
-
+def wait_for_rdp():
 	# wait until the network is available
 	while not output('/usr/sbin/scutil', '-r', VM_HOSTNAME).startswith('Reachable'):
 	 	time.sleep(0.2)
@@ -75,5 +70,15 @@ def ensure_rdp():
 		except socket.error:
 			notify('Waiting for RDP')
 
+def start():
+	# start or unpause VM if needed
+	vmx_paths = vmrun('list')
+	if any(vmx_path.startswith(VM_PATH) for vmx_path in vmx_paths):
+	    vmrun('unpause') # no way I know of to check if the VM is paused
+	else:
+		notify('Starting virtual machine')
+		vmrun('start', 'nogui')
+
 if __name__ == '__main__':
-	ensure_rdp()
+    start()
+    wait_for_rdp()
