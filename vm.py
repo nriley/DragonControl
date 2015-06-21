@@ -45,6 +45,27 @@ def osascript(script, *args):
 def notify(message):
 	osascript('Notify', 'Dictation', message)
 
+class WaitNotifier(object):
+	__slots__ = ('message', 'start_time', 'wait_seconds')
+
+	def __init__(self, message, wait_seconds=2):
+		self.message = message
+		self.wait_seconds = wait_seconds
+
+	def __enter__(self):
+		self.start_time = time.time()
+		return self
+
+	def __call__(self):
+		wait_time = self.wait_seconds - (time.time() - self.start_time)
+		notify(self.message)
+		if wait_time > 0:
+			time.sleep(wait_time)
+		self.start_time = time.time()
+
+	def __exit__(self, *exc_info):
+		pass
+
 VMRUN_PATH = os.path.join(
 	output('/usr/local/bin/launch', '-ni', 'com.vmware.fusion'),
 		   'Contents', 'Library', 'vmrun')
@@ -58,17 +79,18 @@ def vmrun(*args):
 
 def wait_for_rdp():
 	# wait until the network is available
-	while not output('/usr/sbin/scutil', '-r', VM_HOSTNAME).startswith('Reachable'):
-	 	time.sleep(0.2)
-		notify('Waiting for network')
+	with WaitNotifier('Waiting for network') as wait_notify:
+		while not output('/usr/sbin/scutil', '-r', VM_HOSTNAME).startswith('Reachable'):
+			wait_notify()
 
 	# wait until RDP is available
-	while True:
-		try:
-			socket.create_connection((VM_HOSTNAME, 3389), 1)
-			break
-		except socket.error:
-			notify('Waiting for RDP')
+	with WaitNotifier('Waiting for RDP') as wait_notify:
+		while True:
+			try:
+				socket.create_connection((VM_HOSTNAME, 3389), 1)
+				break
+			except socket.error:
+				wait_notify()
 
 def start():
 	# start or unpause VM if needed
