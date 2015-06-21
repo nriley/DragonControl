@@ -102,5 +102,5 @@ def start():
 		vmrun('start', 'nogui')
 
 if __name__ == '__main__':
-    start()
-    wait_for_rdp()
+	start()
+	wait_for_rdp()
