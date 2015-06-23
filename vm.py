@@ -101,6 +101,19 @@ def start():
 		notify('Starting virtual machine')
 		vmrun('start', 'nogui')
 
+def pause():
+	vmrun('pause')
+	notify('Virtual machine paused')
+
+def unpause():
+	vmrun('unpause')
+	notify('Virtual machine unpaused')
+
 if __name__ == '__main__':
-	start()
-	wait_for_rdp()
+	if len(sys.argv) == 1:
+		start()
+		wait_for_rdp()
+	elif sys.argv[1] == 'pause':
+		pause()
+	elif sys.argv[1] == 'unpause':
+		unpause()
