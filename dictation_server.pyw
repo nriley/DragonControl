@@ -10,9 +10,22 @@ import win32con
 import win32com.client
 from win32com.client import constants
 import win32gui
+import _winreg
 
 def Word():
     return win32com.client.gencache.EnsureDispatch('Word.Application')
+
+def fix_addin():
+    # Sometimes Word disables the addin, so it is impossible to
+    # dictate into Word.  This is likely a bug in the addin, but I
+    # don’t have a choice but to work around it.
+    with _winreg.OpenKey(_winreg.HKEY_CURRENT_USER,
+                         r'Software\Microsoft\Office\Word\Addins',
+                         0, _winreg.KEY_ALL_ACCESS) as addins_key:
+        try:
+            _winreg.DeleteValue(addins_key, 'Dragon.Word2000Support.1')
+        except WindowsError:
+            pass
 
 def wake_display():
     win32api.SendMessage(win32con.HWND_BROADCAST, win32con.WM_SYSCOMMAND,
@@ -68,8 +81,8 @@ class DragonService(rpyc.Service):
 
     def exposed_activate_word(self):
         shell = win32com.client.Dispatch("WScript.Shell")
-        shell.AppActivate('Word')
-        shell.AppActivate(' - Word')
+        if not shell.AppActivate('Word') or shell.AppActivate(' - Word'):
+            fix_addin()
         word = Word()
         # if not word.Visible:
         #     # work around Word bug where it mismeasures screen dimensions
