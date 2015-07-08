@@ -15,3 +15,6 @@ dist/
 
 # Python
 *.pyc
+
+# Log files
+*.log
