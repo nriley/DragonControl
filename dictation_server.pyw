@@ -18,7 +18,7 @@ def Word():
 def fix_addin():
     # Sometimes Word disables the addin, so it is impossible to
     # dictate into Word.  This is likely a bug in the addin, but I
-    # don’t have a choice but to work around it.
+    # don't have a choice but to work around it.
     with _winreg.OpenKey(_winreg.HKEY_CURRENT_USER,
                          r'Software\Microsoft\Office\Word\Addins',
                          0, _winreg.KEY_ALL_ACCESS) as addins_key:
