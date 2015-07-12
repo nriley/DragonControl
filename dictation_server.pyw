@@ -114,8 +114,7 @@ class DragonService(rpyc.Service):
 
     def exposed_get_word_document_rtf(self):
         word = Word()
-        document = Word().Documents[0]
-        document.Select()
+        word.Documents[0].Select()
         word.Selection.MoveEnd(Count=-1)
         word.Selection.Copy()
         try:
