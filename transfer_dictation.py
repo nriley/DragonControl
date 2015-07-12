@@ -1,4 +1,5 @@
 # Testing service:
+# ACTIVATE THE VIRTUALENV BEFORE DOING THIS OR THE SERVICE ALWAYS FAILS!
 # killall 'Transfer Dictation'; python setup.py py2app && touch ~/Library/Services && open -a TextEdit
 
 import Cocoa
