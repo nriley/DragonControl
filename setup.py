@@ -17,7 +17,7 @@ plist = dict(
                 NSServiceCategory="public.text"
             ),
             NSReturnTypes=[
-                "NSStringPboardType",
+                "public.utf8-plain-text",
             ],
         ),
         dict(
@@ -30,7 +30,7 @@ plist = dict(
                 NSServiceCategory="public.text"
             ),
             NSSendTypes=[
-                "NSStringPboardType",
+                "public.utf8-plain-text",
             ],
         ),
     ],

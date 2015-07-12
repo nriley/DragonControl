@@ -17,9 +17,9 @@ class TransferDictationService(Cocoa.NSObject):
             if not newString:
                 return u'There is no dictated text to transfer.'
 
-            types = [Cocoa.NSStringPboardType]
-            pboard.declareTypes_owner_([Cocoa.NSStringPboardType], None)
-            pboard.setString_forType_(newString, Cocoa.NSStringPboardType)
+            types = [Cocoa.NSPasteboardTypeString]
+            pboard.declareTypes_owner_([Cocoa.NSPasteboardTypeString], None)
+            pboard.setString_forType_(newString, Cocoa.NSPasteboardTypeString)
         except:
             import traceback
             Cocoa.NSLog(traceback.format_exc())
@@ -28,11 +28,11 @@ class TransferDictationService(Cocoa.NSObject):
     def sendDictation_userData_error_(self, pboard, data, err):
         try:
             types = pboard.types()
-            if Cocoa.NSStringPboardType not in types:
+            if Cocoa.NSPasteboardTypeString not in types:
                 return
             with dictation.service:
                 dictation.start_in_foreground()
-                oldString = pboard.stringForType_(Cocoa.NSStringPboardType)
+                oldString = pboard.stringForType_(Cocoa.NSPasteboardTypeString)
                 word_dictation_document.set_contents(oldString)
         except:
             import traceback
