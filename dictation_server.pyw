@@ -28,6 +28,9 @@ def fix_addin():
         except WindowsError:
             pass
 
+def get_document_text(document):
+    return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n').rstrip()
+
 def wake_display():
     win32api.SendMessage(win32con.HWND_BROADCAST, win32con.WM_SYSCOMMAND,
                          win32con.SC_MONITORPOWER, -1)
@@ -101,7 +104,7 @@ class DragonService(rpyc.Service):
     def exposed_get_word_document_text(self):
         document = Word().ActiveDocument
         document.Select()
-        return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n').rstrip()
+        return get_document_text(document)
 
     def exposed_set_word_document_text(self, text):
         word = Word()
@@ -112,13 +115,23 @@ class DragonService(rpyc.Service):
         word.Selection.GoTo(-1, 0, 0, r'\EndOfDoc')
         word.ScreenUpdating = True
 
-    def exposed_get_word_document_rtf(self):
+    def exposed_get_word_document_rtf(self, or_text_if_monostyled=False):
         word = Word()
-        word.Selection.MoveEnd(Count=-1)
-        if word.Selection.End == 0:
         document = word.ActiveDocument
         document.Select()
+        end = word.Selection.End
+        if end == 0:
             return None
+        if or_text_if_monostyled:
+            # Convert to XML and check for run or paragraph properties.
+            # If present, text is likely styled.
+            # (Yes, I know parsing XML like this is quite brittle.)
+            xml = word.Selection.XML
+            body_index = xml.index('<w:body>')
+            if (xml.find('<w:rPr>', body_index) == -1 and
+                xml.find('<w:pPr>', body_index) == -1):
+                return get_document_text(document)
+        word.Selection.MoveEnd(Count=-1)
         word.Selection.Copy()
         try:
             win32clipboard.OpenClipboard()

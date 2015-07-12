@@ -9,9 +9,9 @@ def get_text():
     with dictation.service as s:
         return s.get_word_document_text()
 
-def get_rtf():
+def get_rtf(or_text_if_monostyled=False):
     with dictation.service as s:
-        return s.get_word_document_rtf()
+        return s.get_word_document_rtf(or_text_if_monostyled)
 
 def set_text(text):
     with dictation.service as s:

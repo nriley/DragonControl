@@ -14,12 +14,14 @@ class TransferDictationService(Cocoa.NSObject):
     @serviceSelector
     def receiveDictation_userData_error_(self, pboard, data, err):
         try:
+            pasteboard_type = Cocoa.NSPasteboardTypeString
             try:
-                contents = word_dictation_document.get_rtf()
-                pasteboard_type = Cocoa.NSPasteboardTypeRTF
+                contents = word_dictation_document.get_rtf(
+                    or_text_if_monostyled=True)
+                if contents.startswith(r'{\rtf'):
+                    pasteboard_type = Cocoa.NSPasteboardTypeRTF
             except:
                 contents = word_dictation_document.get_text()
-                pasteboard_type = Cocoa.NSPasteboardTypeString
             if not contents:
                 return u'There is no dictated text to transfer.'
             pboard.declareTypes_owner_([pasteboard_type], None)
