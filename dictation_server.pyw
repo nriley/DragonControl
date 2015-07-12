@@ -99,14 +99,14 @@ class DragonService(rpyc.Service):
         wake_display()
 
     def exposed_get_word_document_text(self):
-        document = Word().Documents[0]
+        document = Word().ActiveDocument
         document.Select()
         return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n').rstrip()
 
     def exposed_set_word_document_text(self, text):
         word = Word()
         word.ScreenUpdating = False
-        content = word.Documents[0].Content
+        content = word.ActiveDocument.Content
         content.Delete()
         content.Text = text
         word.Selection.GoTo(-1, 0, 0, r'\EndOfDoc')
@@ -114,9 +114,10 @@ class DragonService(rpyc.Service):
 
     def exposed_get_word_document_rtf(self):
         word = Word()
-        word.Documents[0].Select()
         word.Selection.MoveEnd(Count=-1)
         if word.Selection.End == 0:
+        document = word.ActiveDocument
+        document.Select()
             return None
         word.Selection.Copy()
         try:
@@ -127,7 +128,7 @@ class DragonService(rpyc.Service):
 
     def exposed_set_word_document_rtf(self, rtf):
         word = Word()
-        word.Documents[0].Content.Delete()
+        word.ActiveDocument.Content.Delete()
         try:
             win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
