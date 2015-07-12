@@ -133,8 +133,8 @@ class DragonService(rpyc.Service):
                 return get_document_text(document)
         word.Selection.MoveEnd(Count=-1)
         word.Selection.Copy()
+        win32clipboard.OpenClipboard()
         try:
-            win32clipboard.OpenClipboard()
             return win32clipboard.GetClipboardData(CLIPBOARD_RTF)
         finally:
             win32clipboard.CloseClipboard()
@@ -142,8 +142,8 @@ class DragonService(rpyc.Service):
     def exposed_set_word_document_rtf(self, rtf):
         word = Word()
         word.ActiveDocument.Content.Delete()
+        win32clipboard.OpenClipboard()
         try:
-            win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
             win32clipboard.SetClipboardData(CLIPBOARD_RTF, rtf)
         finally:
