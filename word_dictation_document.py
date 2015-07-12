@@ -21,6 +21,15 @@ def set_rtf(rtf):
     with dictation.service as s:
         return s.set_word_document_rtf(rtf.encode('ascii'))
 
+def set_rtf_clip():
+    # pbpaste -Prefer rtf doesn't work in 10.10, so work around it
+    from Cocoa import NSPasteboard
+    pasteboard = NSPasteboard.generalPasteboard()
+    data = pasteboard.dataForType_('public.rtf')
+    if data:
+        with dictation.service as s:
+            s.set_word_document_rtf(str(data))
+
 def clear_contents():
     set_text('')
 
@@ -37,14 +46,14 @@ def set(format=None):
     else:
         set_text(contents)
 
-def edit():
+def edit(format=None):
     with dictation.service as s:
         s.set_mic_state('on')
         s.activate_word()
-        set()
+        set(format)
 
 def usage():
-    print >> sys.stderr, 'usage:', sys.argv[0], '[get|set|edit] [text|RTF]'
+    print >> sys.stderr, 'usage:', sys.argv[0], '[get|set|setclip|edit] [text|RTF]'
     sys.exit(1)
 
 if __name__ == '__main__':
@@ -59,8 +68,10 @@ if __name__ == '__main__':
             get(format)
         elif command == 'set':
             set(format)
+        elif command == 'setclip':
+            set_rtf_clip()
         elif command == 'edit':
-            edit()
+            edit(format)
         else:
             usage()
     except Exception as e:
