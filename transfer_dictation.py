@@ -20,9 +20,8 @@ class TransferDictationService(Cocoa.NSObject):
             except:
                 contents = word_dictation_document.get_text()
                 pasteboard_type = Cocoa.NSPasteboardTypeString
-                if not contents:
-                    return u'There is no dictated text to transfer.'
-
+            if not contents:
+                return u'There is no dictated text to transfer.'
             pboard.declareTypes_owner_([pasteboard_type], None)
             pboard.setString_forType_(contents, pasteboard_type)
         except:
