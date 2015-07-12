@@ -7,7 +7,7 @@ __all__ = ['get_text', 'get_rtf', 'set_text', 'set_rtf', 'clear_contents']
 
 def get_text():
     with dictation.service as s:
-        return s.get_word_document_text().rstrip()
+        return s.get_word_document_text()
 
 def get_rtf():
     with dictation.service as s:

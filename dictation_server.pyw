@@ -101,7 +101,7 @@ class DragonService(rpyc.Service):
     def exposed_get_word_document_text(self):
         document = Word().Documents[0]
         document.Select()
-        return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n')
+        return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n').rstrip()
 
     def exposed_set_word_document_text(self, text):
         word = Word()
