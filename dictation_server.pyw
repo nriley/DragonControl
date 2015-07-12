@@ -116,6 +116,8 @@ class DragonService(rpyc.Service):
         word = Word()
         word.Documents[0].Select()
         word.Selection.MoveEnd(Count=-1)
+        if word.Selection.End == 0:
+            return None
         word.Selection.Copy()
         try:
             win32clipboard.OpenClipboard()
