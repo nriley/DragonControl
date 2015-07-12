@@ -6,6 +6,7 @@ import rpyc
 import subprocess
 import sys
 import win32api
+import win32clipboard
 import win32con
 import win32com.client
 from win32com.client import constants
@@ -55,6 +56,8 @@ def set_taskbar_autohide(on):
             lParam=1 if on else 0)
     ctypes.windll.shell32.SHAppBarMessage(ABM_SETSTATE, ctypes.byref(appbarData))
 
+CLIPBOARD_RTF = win32clipboard.RegisterClipboardFormat('Rich Text Format')
+
 class DragonService(rpyc.Service):
     should_keep_serving = True
 
@@ -95,17 +98,42 @@ class DragonService(rpyc.Service):
             documents.Add()
         wake_display()
 
-    def exposed_get_word_document_contents(self):
+    def exposed_get_word_document_text(self):
         document = Word().Documents[0]
         document.Select()
         return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n')
 
-    def exposed_set_word_document_contents(self, contents):
+    def exposed_set_word_document_text(self, text):
         word = Word()
         word.ScreenUpdating = False
-        word.Documents[0].Content.Text = contents
+        content = word.Documents[0].Content
+        content.Delete()
+        content.Text = text
         word.Selection.GoTo(-1, 0, 0, r'\EndOfDoc')
         word.ScreenUpdating = True
+
+    def exposed_get_word_document_rtf(self):
+        word = Word()
+        document = Word().Documents[0]
+        document.Select()
+        word.Selection.MoveEnd(Count=-1)
+        word.Selection.Copy()
+        try:
+            win32clipboard.OpenClipboard()
+            return win32clipboard.GetClipboardData(CLIPBOARD_RTF)
+        finally:
+            win32clipboard.CloseClipboard()
+
+    def exposed_set_word_document_rtf(self, rtf):
+        word = Word()
+        word.Documents[0].Content.Delete()
+        try:
+            win32clipboard.OpenClipboard()
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardData(CLIPBOARD_RTF, rtf)
+        finally:
+            win32clipboard.CloseClipboard()
+        word.Selection.Paste()
 
     def exposed_stop_server(self):
         DragonService.should_keep_serving = False

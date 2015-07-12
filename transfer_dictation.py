@@ -13,13 +13,17 @@ class TransferDictationService(Cocoa.NSObject):
     @serviceSelector
     def receiveDictation_userData_error_(self, pboard, data, err):
         try:
-            newString = word_dictation_document.get_contents()
-            if not newString:
-                return u'There is no dictated text to transfer.'
+            try:
+                contents = word_dictation_document.get_rtf()
+                pasteboard_type = Cocoa.NSPasteboardTypeRTF
+            except:
+                contents = word_dictation_document.get_text()
+                pasteboard_type = Cocoa.NSPasteboardTypeString
+                if not contents:
+                    return u'There is no dictated text to transfer.'
 
-            types = [Cocoa.NSPasteboardTypeString]
-            pboard.declareTypes_owner_([Cocoa.NSPasteboardTypeString], None)
-            pboard.setString_forType_(newString, Cocoa.NSPasteboardTypeString)
+            pboard.declareTypes_owner_([pasteboard_type], None)
+            pboard.setString_forType_(contents, pasteboard_type)
         except:
             import traceback
             Cocoa.NSLog(traceback.format_exc())
@@ -28,12 +32,17 @@ class TransferDictationService(Cocoa.NSObject):
     def sendDictation_userData_error_(self, pboard, data, err):
         try:
             types = pboard.types()
-            if Cocoa.NSPasteboardTypeString not in types:
+            if Cocoa.NSPasteboardTypeRTF in types:
+                pasteboard_type = Cocoa.NSPasteboardTypeRTF
+                setter = word_dictation_document.set_rtf
+            elif Cocoa.NSPasteboardTypeString in types:
+                pasteboard_type = Cocoa.NSPasteboardTypeString
+                setter = word_dictation_document.set_text
+            else:
                 return
             with dictation.service:
                 dictation.start_in_foreground()
-                oldString = pboard.stringForType_(Cocoa.NSPasteboardTypeString)
-                word_dictation_document.set_contents(oldString)
+                setter(pboard.stringForType_(pasteboard_type))
         except:
             import traceback
             Cocoa.NSLog(traceback.format_exc())

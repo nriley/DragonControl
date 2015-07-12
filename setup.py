@@ -17,6 +17,7 @@ plist = dict(
                 NSServiceCategory="public.text"
             ),
             NSReturnTypes=[
+                "public.rtf",
                 "public.utf8-plain-text",
             ],
         ),
@@ -30,6 +31,7 @@ plist = dict(
                 NSServiceCategory="public.text"
             ),
             NSSendTypes=[
+                "public.rtf",
                 "public.utf8-plain-text",
             ],
         ),
