@@ -38,7 +38,6 @@ if __name__ == '__main__':
             level=logging.DEBUG)
 
     try:
-        import sys
         sys.path.append(r'..\Unimacro')
         import autohotkeyactions
         # GetAhkExe() doesn't return the location of the AHK EXE.
