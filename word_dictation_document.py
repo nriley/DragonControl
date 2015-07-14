@@ -67,18 +67,19 @@ if __name__ == '__main__':
             get()
         elif len(sys.argv) > 3:
             usage()
-        command = sys.argv[1]
-        format = sys.argv[2] if len(sys.argv) == 3 else None
-        if command == 'get':
-            get(format)
-        elif command == 'set':
-            set(format)
-        elif command == 'setclip':
-            set_rtf_clip()
-        elif command == 'edit':
-            edit(format)
         else:
-            usage()
+            command = sys.argv[1]
+            format = sys.argv[2] if len(sys.argv) == 3 else None
+            if command == 'get':
+                get(format)
+            elif command == 'set':
+                set(format)
+            elif command == 'setclip':
+                set_rtf_clip()
+            elif command == 'edit':
+                edit(format)
+            else:
+                usage()
     except Exception as e:
         print >> sys.stderr, e
         sys.exit(1)
