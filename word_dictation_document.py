@@ -34,8 +34,12 @@ def clear_contents():
     set_text('')
 
 def get(format=None):
-    if format and format.lower() == 'rtf':
-        sys.stdout.write(get_rtf())
+    if format:
+        format = format.lower()
+        if format == 'rtf':
+            sys.stdout.write(get_rtf())
+        elif format == 'textorrtf':
+            sys.stdout.write(get_rtf(or_text_if_monostyled=True))
     else:
         sys.stdout.write(get_text().encode('utf-8'))
 
@@ -53,7 +57,8 @@ def edit(format=None):
         set(format)
 
 def usage():
-    print >> sys.stderr, 'usage:', sys.argv[0], '[get|set|setclip|edit] [text|RTF]'
+    print >> sys.stderr, 'usage:', sys.argv[0],
+    print >> sys.stderr, '[get|set|setclip|edit] [text|RTF|textOrRTF]'
     sys.exit(1)
 
 if __name__ == '__main__':
