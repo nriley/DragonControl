@@ -39,7 +39,7 @@ def get(format=None):
         if format == 'rtf':
             sys.stdout.write(get_rtf())
         elif format == 'textorrtf':
-            sys.stdout.write(get_rtf(or_text_if_monostyled=True))
+            sys.stdout.write(get_rtf(or_text_if_monostyled=True).encode('utf-8'))
     else:
         sys.stdout.write(get_text().encode('utf-8'))
 
