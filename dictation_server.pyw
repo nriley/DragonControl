@@ -62,20 +62,31 @@ def set_taskbar_autohide(on):
 CLIPBOARD_RTF = win32clipboard.RegisterClipboardFormat('Rich Text Format')
 
 class DragonService(rpyc.Service):
+    __slots__ = ('natlink_connected',)
+
     should_keep_serving = True
 
     def on_connect(self):
-        natlink.natConnect(True)
+        self.natlink_connected = False
 
     def on_disconnect(self):
-        natlink.natDisconnect()
+        if self.natlink_connected:
+            natlink.natDisconnect()
+
+    def natlink(self):
+        if not self.natlink_connected:
+            logging.info('connecting...')
+            natlink.natConnect(True)
+            logging.info('connected')
+            self.natlink_connected = True
+        return natlink
 
     def exposed_get_mic_state(self):
-        return natlink.getMicState()
+        return self.natlink().getMicState()
 
     def exposed_set_mic_state(self, state):
         try:
-            natlink.setMicState(state)
+            self.natlink().setMicState(state)
         except natlink.NatError:
             if state != 'on':
                 raise
