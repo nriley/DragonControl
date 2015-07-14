@@ -24,7 +24,7 @@ def fix_addin():
                          r'Software\Microsoft\Office\Word\Addins',
                          0, _winreg.KEY_ALL_ACCESS) as addins_key:
         try:
-            _winreg.DeleteValue(addins_key, 'Dragon.Word2000Support.1')
+            _winreg.DeleteKey(addins_key, 'Dragon.Word2000Support.1')
         except WindowsError:
             pass
 
