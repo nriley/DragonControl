@@ -81,5 +81,5 @@ if __name__ == '__main__':
             else:
                 usage()
     except Exception as e:
-        print >> sys.stderr, e
+        print >> sys.stderr, '%s: %s failed (%s)' % (sys.argv[0], sys.argv[1], e)
         sys.exit(1)
