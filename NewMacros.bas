@@ -67,3 +67,21 @@ Public Function DocumentIsText()
         DocumentIsText = False
     End Select
 End Function
+
+Sub FindPlaceholder(Forward As Boolean)
+    With Selection.Find
+        .ClearFormatting
+        .Wrap = wdFindContinue
+        .MatchWholeWord = False
+        .Forward = Forward
+        .Execute FindText:="***"
+    End With
+End Sub
+
+Public Sub FindNextPlaceholder()
+    FindPlaceholder (True)
+End Sub
+
+Public Sub FindPreviousPlaceholder()
+    FindPlaceholder (False)
+End Sub
