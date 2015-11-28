@@ -202,7 +202,7 @@ if __name__ == '__main__':
 
     import logging
     logging.basicConfig(filename='dictation_server.log',
-        format='%(asctime)s %(levelname)-5s %(name)s: %(message)s',
+        format='%(asctime)s.%(msecs)03d %(levelname)-5s %(name)s: %(message)s',
         datefmt='%m/%d %H:%M:%S',
         level=logging.DEBUG)
 
