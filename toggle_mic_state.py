@@ -5,12 +5,8 @@ import subprocess
 
 if __name__ == '__main__':
 	with dictation.service as s:
-		initial_mic_state = s.get_mic_state()
+		mic_state = s.toggle_mic_state()
 
-		if initial_mic_state != 'on':
-			s.set_mic_state('on')
+		if mic_state == 'on':
 			s.activate_word()
 			dictation.show_app()
-		else:
-			s.set_mic_state('off')
-			message = 'Dragon is not listening.'
