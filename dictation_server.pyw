@@ -13,6 +13,18 @@ from win32com.client import constants
 import win32gui
 import _winreg
 
+# timing (http://stackoverflow.com/a/30024601/6372)
+from contextlib import contextmanager
+from timeit import default_timer
+
+@contextmanager
+def elapsed_timer():
+    start = default_timer()
+    elapsed = lambda: default_timer() - start
+    yield lambda: elapsed()
+    end = default_timer()
+    elapsed = lambda: end - start
+
 def Word():
     return win32com.client.gencache.EnsureDispatch('Word.Application')
 
