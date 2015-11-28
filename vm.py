@@ -18,7 +18,7 @@ VM_PATHS = (
 	os.path.join(
 		HOME, 'Library', 'Application Support',
 		'VMware Fusion', 'Virtual Machines', 'Boot Camp',
-		'Boot Camp.vmwarevm'))
+		'Windows 7.vmwarevm'))
 
 # XXX duplicated
 VM_HOSTNAME = 'shirley7.local'
