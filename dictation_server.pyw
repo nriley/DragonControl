@@ -94,11 +94,11 @@ class DragonService(rpyc.Service):
         return natlink
 
     def exposed_get_mic_state(self):
-        return self.natlink().getMicState()
+        return self.natlink().getMicState() # 0.006s
 
     def exposed_set_mic_state(self, state):
         try:
-            self.natlink().setMicState(state)
+            self.natlink().setMicState(state) # 0.001 - 0.2s
         except natlink.NatError:
             if state != 'on':
                 raise
