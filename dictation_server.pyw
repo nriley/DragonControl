@@ -87,9 +87,9 @@ class DragonService(rpyc.Service):
 
     def natlink(self):
         if not self.natlink_connected:
-            logging.info('connecting...')
-            natlink.natConnect(True)
-            logging.info('connected')
+            with elapsed_timer() as elapsed:
+                natlink.natConnect(True) # 0.006 - 4.5s
+            logging.info('connected in %f', elapsed())
             self.natlink_connected = True
         return natlink
 
