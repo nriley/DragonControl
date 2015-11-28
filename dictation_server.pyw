@@ -106,7 +106,8 @@ class DragonService(rpyc.Service):
             # enabled from the server side:
             # NatError: A SRERR_VALUEOUTOFRANGE error occurred calling
             # IDgnSREngineControl::SetMicState from DragCode.cpp 2249.
-        wake_display()
+        if state == 'on':
+            wake_display() # 0.3 - 0.4s
 
     def exposed_activate_word(self):
         shell = win32com.client.Dispatch("WScript.Shell")
