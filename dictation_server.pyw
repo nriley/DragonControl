@@ -109,6 +109,15 @@ class DragonService(rpyc.Service):
         if state == 'on':
             wake_display() # 0.3 - 0.4s
 
+    def exposed_toggle_mic_state(self):
+        state = 'on' if self.natlink().getMicState() == 'off' else 'off'
+        try:
+            self.natlink().setMicState(state)
+        except natlink.NatError: # see explanation above
+            if state != 'on':
+                raise
+        return state
+
     def exposed_activate_word(self):
         shell = win32com.client.Dispatch("WScript.Shell")
         if not (shell.AppActivate('Word') or shell.AppActivate(' - Word')):
