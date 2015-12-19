@@ -20,8 +20,7 @@ VM_PATHS = (
 		'VMware Fusion', 'Virtual Machines', 'Boot Camp',
 		'Windows 7.vmwarevm'))
 
-# XXX duplicated
-VM_HOSTNAME = 'shirley7.local'
+VM_IP_CACHE_PATH = os.path.join(HOME, '.dragoncontrol_vm_ip')
 
 def dictation_vm_path():
 	for vm_path in VM_PATHS:
@@ -79,15 +78,19 @@ def vmrun(*args):
 
 def wait_for_rdp():
 	# wait until the network is available
+	ip_address = None
 	with WaitNotifier('Waiting for network') as wait_notify:
-		while not output('/usr/sbin/scutil', '-r', VM_HOSTNAME).startswith('Reachable'):
+		while True:
+			ip_address = guest_ip_address(useCached=False)
+			if ip_address is not None:
+				break
 			wait_notify()
 
 	# wait until RDP is available
 	with WaitNotifier('Waiting for RDP') as wait_notify:
 		while True:
 			try:
-				socket.create_connection((VM_HOSTNAME, 3389), 1)
+				socket.create_connection((ip_address, 3389), 1)
 				break
 			except socket.error:
 				wait_notify()
@@ -108,6 +111,24 @@ def pause():
 def unpause():
 	vmrun('unpause')
 	notify('Virtual machine unpaused')
+
+def guest_ip_address(useCached=True):
+	if useCached:
+		try:
+			return file(VM_IP_CACHE_PATH, 'r').read()
+		except IOError:
+			pass
+	try:
+		address = vmrun('getGuestIPAddress')
+		if address != 'unknown':
+			file(VM_IP_CACHE_PATH, 'w').write(address)
+			return address
+	except subprocess.CalledProcessError:
+		pass # VMware Tools not running yet
+	try:
+		os.unlink(VM_IP_CACHE_PATH)
+	except OSError:
+		pass
 
 if __name__ == '__main__':
 	if len(sys.argv) == 1:

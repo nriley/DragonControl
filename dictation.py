@@ -2,23 +2,33 @@
 
 import rpyc
 import subprocess
+import vm
 
 __all__ = ('service', 'switch_to_app', 'show_app', 'start_in_foreground')
 
 class _Service(object):
-    __slots__ = ('connection', 'nesting_level')
+    __slots__ = ('connection', 'nesting_level', 'ip_address')
 
     def __init__(self):
         self.connection = None
+        self.ip_address = None
         self.nesting_level = 0
 
     def __enter__(self):
+        if self.ip_address is None:
+            self.ip_address = vm.guest_ip_address()
+            if self.ip_address is None:
+                raise Exception("Dictation server VM not ready")
         if self.connection is None:
-            self.connection = rpyc.connect('shirley7.local', 9999)
+            self.connection = rpyc.connect(self.ip_address, 9999)
         try:
             self.connection.ping(timeout=1)
         except:
             self.close()
+            if vm.guest_ip_address(useCached=False) != self.ip_address:
+                # shouldn't happen in normal use; if it does, I need to fix something
+                self.ip_address = None
+                raise Exception("Cached dictation server address stale")
             raise Exception("Can't connect to dictation server (blocked?)")
         self.nesting_level += 1
 
