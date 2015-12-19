@@ -1,3 +1,14 @@
+# NOTE: At least in 10.11.0-10.11.2 the built-in py2app won't build
+# with SIP on (default).
+
+# *** creating application bundle: Transfer Dictation ***
+# error: [Errno 1] Operation not permitted: '/Users/nicholas/Documents/Development/DragonControl/dist/Transfer Dictation.service/Contents/MacOS/Transfer Dictation'
+
+# You can build/install your own py2app in the virtualenv to get
+# around this.
+
+# See <http://stackoverflow.com/a/34374232/6372>.
+
 from setuptools import setup
 import py2app
 
