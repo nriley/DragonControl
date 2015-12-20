@@ -25,8 +25,8 @@ class _Service(object):
             self.connection.ping(timeout=1)
         except:
             self.close()
-            if vm.guest_ip_address(useCached=False) != self.ip_address:
-                # shouldn't happen in normal use; if it does, I need to fix something
+            if vm.guest_ip_address(use_cached=False) != self.ip_address:
+                # shouldn't happen in normal use; if so, I need to fix something
                 self.ip_address = None
                 raise Exception("Cached dictation server address stale")
             raise Exception("Can't connect to dictation server (blocked?)")

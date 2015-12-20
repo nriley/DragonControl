@@ -97,13 +97,7 @@ def vmrun(*args):
 
 def wait_for_rdp():
 	# wait until the network is available
-	ip_address = None
-	with WaitNotifier('Waiting for network') as wait_notify:
-		while True:
-			ip_address = guest_ip_address(useCached=False)
-			if ip_address is not None:
-				break
-			wait_notify()
+	ip_address = guest_ip_address(use_cached=False)
 
 	# wait until RDP is available
 	with WaitNotifier('Waiting for RDP') as wait_notify:
@@ -131,19 +125,28 @@ def unpause():
 	vmrun('unpause')
 	notify('Virtual machine unpaused')
 
-def guest_ip_address(useCached=True):
-	if useCached:
+def guest_ip_address(use_cached=True):
+	if use_cached:
 		try:
 			return file(VM_IP_CACHE_PATH, 'r').read()
 		except IOError:
 			pass
-	try:
-		address = vmrun('getGuestIPAddress')
-		if address != 'unknown':
-			file(VM_IP_CACHE_PATH, 'w').write(address)
-			return address
-	except subprocess.CalledProcessError:
-		pass # VMware Tools not running yet
+	vmrun_cmd = [VMRUN_PATH, 'getGuestIPAddress', VM_PATH, '-wait']
+	vmrun_process = subprocess.Popen(vmrun_cmd, stdout=subprocess.PIPE)
+	with WaitNotifier('Waiting for network') as wait_notify:
+		while True:
+			returncode = vmrun_process.poll()
+			if returncode == 0:
+				address = vmrun_process.stdout.read().rstrip()
+				if address != 'unknown':
+					file(VM_IP_CACHE_PATH, 'w').write(address)
+					return address
+			elif returncode is not None: # VM likely not running
+				if use_cached:
+					break
+				raise subprocess.CalledProcessError(returncode, vmrun_cmd,
+												    vmrun_process.stdout.read())
+			wait_notify()
 	try:
 		os.unlink(VM_IP_CACHE_PATH)
 	except OSError:
