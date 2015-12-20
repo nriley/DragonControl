@@ -45,21 +45,40 @@ def notify(message):
 	osascript('Notify', 'Dictation', message)
 
 class WaitNotifier(object):
-	__slots__ = ('message', 'start_time', 'wait_seconds')
+	__slots__ = ('message', 'start_time', 'wait_seconds',
+				 'notify_time', 'notify_seconds')
 
-	def __init__(self, message, wait_seconds=2):
+	def __init__(self, message, wait_seconds=0.1):
 		self.message = message
 		self.wait_seconds = wait_seconds
+		self.notify_seconds = max(wait_seconds, 4)
 
 	def __enter__(self):
 		self.start_time = time.time()
+		self.notify_time = None
 		return self
 
+	@property
+	def wait_seconds_remaining(self):
+		return self.wait_seconds - (time.time() - self.start_time)
+
+	@property
+	def notify_seconds_remaining(self):
+		if self.notify_time is None:
+			return 0
+		return self.notify_seconds - (time.time() - self.notify_time)
+
 	def __call__(self):
-		wait_time = self.wait_seconds - (time.time() - self.start_time)
-		notify(self.message)
-		if wait_time > 0:
-			time.sleep(wait_time)
+		notify_seconds_remaining = self.notify_seconds_remaining
+		wait_seconds_remaining = self.wait_seconds_remaining
+		if notify_seconds_remaining < wait_seconds_remaining:
+			if notify_seconds_remaining > 0:
+				time.sleep(notify_seconds_remaining)
+			notify(self.message)
+			self.notify_time = time.time()
+			wait_seconds_remaining = self.wait_seconds_remaining
+		if wait_seconds_remaining > 0:
+			time.sleep(wait_seconds_remaining)
 		self.start_time = time.time()
 
 	def __exit__(self, *exc_info):
