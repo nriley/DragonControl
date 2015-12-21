@@ -108,6 +108,14 @@ def wait_for_rdp():
 			except socket.error:
 				wait_notify()
 
+def update_jump(jump_connection_path):
+	ip_address = guest_ip_address() or guest_ip_address(use_cached=False)
+
+	import json
+	jump_connection = json.load(file(jump_connection_path, 'rb'))
+	jump_connection['TcpHostName'] = ip_address
+	json.dump(jump_connection, file(jump_connection_path, 'wb'), indent=2)
+
 def start():
 	# start or unpause VM if needed
 	vmx_paths = vmrun('list')
@@ -160,3 +168,5 @@ if __name__ == '__main__':
 		pause()
 	elif sys.argv[1] == 'unpause':
 		unpause()
+	elif sys.argv[1] == 'update_jump':
+		update_jump(sys.argv[2])
