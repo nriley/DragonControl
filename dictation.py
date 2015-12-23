@@ -1,6 +1,7 @@
 #!/Users/nicholas/Documents/Development/DragonControl/bin/python
 
 import rpyc
+import socket
 import subprocess
 import vm
 
@@ -20,16 +21,16 @@ class _Service(object):
             if self.ip_address is None:
                 raise Exception("Dictation server VM not ready")
         if self.connection is None:
-            self.connection = rpyc.connect(self.ip_address, 9999)
+            try:
+                self.connection = rpyc.connect(self.ip_address, 9999)
+            except socket.timeout: # guest address changed?
+                self.ip_address = vm.guest_ip_address(use_cached=False)
+                self.connection = rpyc.connect(self.ip_address, 9999)
         try:
             self.connection.ping(timeout=1)
-        except:
+        except Exception, e:
             self.close()
-            if vm.guest_ip_address(use_cached=False) != self.ip_address:
-                # shouldn't happen in normal use; if so, I need to fix something
-                self.ip_address = None
-                raise Exception("Cached dictation server address stale")
-            raise Exception("Can't connect to dictation server (blocked?)")
+            raise Exception("Can't connect to dictation server (%s)" % e)
         self.nesting_level += 1
 
         return self.connection.root
