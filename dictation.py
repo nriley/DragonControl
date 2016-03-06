@@ -1,7 +1,6 @@
 #!/Users/nicholas/Documents/Development/DragonControl/bin/python
 
 import rpyc
-import socket
 import subprocess
 import vm
 
@@ -20,17 +19,22 @@ class _Service(object):
             self.ip_address = vm.guest_ip_address()
             if self.ip_address is None:
                 raise Exception("Dictation server VM not ready")
-        if self.connection is None:
-            try:
-                self.connection = rpyc.connect(self.ip_address, 9999)
-            except socket.timeout: # guest address changed?
-                self.ip_address = vm.guest_ip_address(use_cached=False)
-                self.connection = rpyc.connect(self.ip_address, 9999)
         try:
+            if self.connection is None:
+                self.connection = rpyc.connect(self.ip_address, 9999)
             self.connection.ping(timeout=1)
-        except Exception, e:
-            self.close()
-            raise Exception("Can't connect to dictation server (%s)" % e)
+        except:
+            try: self.close()
+            except: pass
+            if vm.guest_ip_address(use_cached=False) != self.ip_address:
+                # Transfer Dictation can stick around through server restarts
+                # should repeat at most once
+                self.ip_address = None
+                return self.__enter__()
+            else:
+                raise Exception(
+                    "Can't connect to dictation server (blocked?): " +
+                    __import__('traceback').format_exc())
         self.nesting_level += 1
 
         return self.connection.root
