@@ -37,9 +37,13 @@ def output(*args):
 	return subprocess.check_output(args).rstrip('\n')
 
 def osascript(script, *args):
-	return subprocess.check_output(['/usr/bin/osascript',
-		os.path.join(os.path.dirname(os.path.abspath(__file__)),
-				     script + '.scpt')] + list(args))
+    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+				               script + '.scpt')
+    if not os.path.exists(script_path):
+        print >> sys.stderr, "Script doesn't exist:", script, ' '.join(args)
+        return False
+	return subprocess.check_output(
+        ['/usr/bin/osascript', script_path] + list(args))
 
 def notify(message):
 	osascript('Notify', 'Dictation', message)
