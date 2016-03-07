@@ -37,13 +37,13 @@ def output(*args):
 	return subprocess.check_output(args).rstrip('\n')
 
 def osascript(script, *args):
-    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-				               script + '.scpt')
-    if not os.path.exists(script_path):
-        print >> sys.stderr, "Script doesn't exist:", script, ' '.join(args)
-        return False
+	script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+							   script + '.scpt')
+	if not os.path.exists(script_path):
+		print >> sys.stderr, "Script doesn't exist:", script, ' '.join(args)
+		return False
 	return subprocess.check_output(
-        ['/usr/bin/osascript', script_path] + list(args))
+		['/usr/bin/osascript', script_path] + list(args))
 
 def notify(message):
 	osascript('Notify', 'Dictation', message)
@@ -124,7 +124,7 @@ def start():
 	# start or unpause VM if needed
 	vmx_paths = vmrun('list')
 	if any(vmx_path.startswith(VM_PATH) for vmx_path in vmx_paths):
-	    vmrun('unpause') # no way I know of to check if the VM is paused
+		vmrun('unpause') # no way I know of to check if the VM is paused
 	else:
 		notify('Starting virtual machine')
 		vmrun('start', 'nogui')
@@ -157,7 +157,7 @@ def guest_ip_address(use_cached=True):
 				if use_cached:
 					break
 				raise subprocess.CalledProcessError(returncode, vmrun_cmd,
-												    vmrun_process.stdout.read())
+													vmrun_process.stdout.read())
 			wait_notify()
 	try:
 		os.unlink(VM_IP_CACHE_PATH)
