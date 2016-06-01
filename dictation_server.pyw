@@ -191,7 +191,9 @@ def startNatSpeak():
     status = natlinkstatus.NatlinkStatus()
     natspeak_exe_path = os.path.join(
         status.getDNSInstallDir(), 'Program', 'natspeak.exe')
-    os.startfile(natspeak_exe_path)
+    win32api.ShellExecute(
+        0, None, natspeak_exe_path,
+        '/user "https://sabi.net/dragon/Nicholas Riley (v12)"', '', 0)
 
     import time
     while not natlink.isNatSpeakRunning():
