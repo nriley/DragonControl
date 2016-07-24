@@ -1,3 +1,4 @@
+import autohotkey
 import ctypes
 from ctypes import wintypes
 import natlink
@@ -132,6 +133,8 @@ class DragonService(rpyc.Service):
         documents = word.Documents
         if len(documents) == 0:
             documents.Add()
+        autohotkey.run('Activate Word')
+
         wake_display()
 
     def exposed_get_word_document_text(self):
