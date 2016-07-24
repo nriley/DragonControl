@@ -1,12 +1,11 @@
+import autohotkey
 import logging
 import natlink
 import subprocess
 import win32gui
-import win32process
 
 def microphone_state_autohotkey(*args):
-    subprocess.Popen((AHK_EXE, 'Dragon Microphone State.ahk') + args,
-                     creationflags=win32process.CREATE_NEW_PROCESS_GROUP)
+    autohotkey.run('Dragon Microphone State', *args)
 
 last_mic_state = None
 
@@ -38,12 +37,6 @@ if __name__ == '__main__':
             level=logging.DEBUG)
 
     try:
-        sys.path.append(r'..\Unimacro')
-        import autohotkeyactions
-        # GetAhkExe() doesn't return the location of the AHK EXE.
-        # Instead, ahk_is_active() does.  No, I have no idea either.
-        AHK_EXE = autohotkeyactions.ahk_is_active()
-
         if should_start_monitor:
             natlink.natConnect(True)
             logging.debug('getMicState at startup: ' + natlink.getMicState())
