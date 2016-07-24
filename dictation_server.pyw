@@ -244,6 +244,13 @@ class MicrophoneStateMonitor(object):
         self.monitor = None
         subprocess.call([sys.executable, self.SCRIPT_PATH, 'stop'])
 
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -257,6 +264,8 @@ if __name__ == '__main__':
         format='%(asctime)s.%(msecs)03d %(levelname)-5s %(name)s: %(message)s',
         datefmt='%m/%d %H:%M:%S',
         level=logging.DEBUG)
+
+    sys.excepthook = handle_exception
 
     with MicrophoneStateMonitor():
         from rpyc.utils.server import OneShotServer
