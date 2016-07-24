@@ -4,6 +4,7 @@ from ctypes import wintypes
 import natlink
 import os
 import rpyc
+import struct
 import subprocess
 import sys
 import win32api
@@ -33,13 +34,37 @@ def fix_addin():
     # Sometimes Word disables the addin, so it is impossible to
     # dictate into Word.  This is likely a bug in the addin, but I
     # don't have a choice but to work around it.
+    addin_name = 'Dragon.Word2000Support.1'
     with _winreg.OpenKey(_winreg.HKEY_CURRENT_USER,
                          r'Software\Microsoft\Office\Word\Addins',
                          0, _winreg.KEY_ALL_ACCESS) as addins_key:
         try:
-            _winreg.DeleteKey(addins_key, 'Dragon.Word2000Support.1')
+            _winreg.DeleteKey(addins_key, addin_name)
+            logging.info('Rescued Word addin from being disabled')
         except WindowsError:
             pass
+    # Another location (http://superuser.com/questions/17557/)
+    with _winreg.OpenKey(_winreg.HKEY_CURRENT_USER,
+                         r'Software\Microsoft\Office\15.0\Word' +
+                         r'\Resiliency\DisabledItems',
+                         0, _winreg.KEY_ALL_ACCESS) as disabled_key:
+        index = 0
+        while True:
+            try:
+                name, data, rtype = _winreg.EnumValue(disabled_key, index)
+                format = '3I'
+                _, dll_len, name_len = struct.unpack_from(format, buffer(data))
+                format += '%ds%ds' % (dll_len, name_len)
+                _, _, _, dll_path, dll_name = struct.unpack(format, data)
+                dll_path = dll_path.decode('utf16').rstrip('\0')
+                dll_name = dll_name.decode('utf16').rstrip('\0')
+                if dll_name.lower() == addin_name.lower():
+                    _winreg.DeleteValue(disabled_key, name)
+                    logging.info('Rescued Word addin from Resiliency')
+                    break
+                index += 1
+            except WindowsError:
+                break
 
 def get_document_text(document):
     return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n').rstrip()
