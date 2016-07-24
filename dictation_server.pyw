@@ -1,4 +1,3 @@
-import autohotkey
 import ctypes
 from ctypes import wintypes
 import natlink
@@ -253,6 +252,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+    import autohotkey
 
     # check that DNS is running; if we use natConnect() without a UI,
     # it starts DNS in a captive mode, without systemwide speech recognition

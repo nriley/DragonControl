@@ -1,4 +1,3 @@
-import autohotkey
 import logging
 import natlink
 import subprocess
@@ -26,6 +25,8 @@ def destroy_window():
 if __name__ == '__main__':
     import os
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+    import autohotkey
 
     import sys
     should_start_monitor = len(sys.argv) == 1
