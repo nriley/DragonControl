@@ -44,13 +44,13 @@ def fix_addin():
         except WindowsError:
             pass
     # Another location (http://superuser.com/questions/17557/)
-    with _winreg.OpenKey(_winreg.HKEY_CURRENT_USER,
-                         r'Software\Microsoft\Office\15.0\Word' +
-                         r'\Resiliency\DisabledItems',
-                         0, _winreg.KEY_ALL_ACCESS) as disabled_key:
-        index = 0
-        while True:
-            try:
+    try:
+        with _winreg.OpenKey(_winreg.HKEY_CURRENT_USER,
+                             r'Software\Microsoft\Office\15.0\Word' +
+                             r'\Resiliency\DisabledItems',
+                             0, _winreg.KEY_ALL_ACCESS) as disabled_key:
+            index = 0
+            while True:
                 name, data, rtype = _winreg.EnumValue(disabled_key, index)
                 format = '3I'
                 _, dll_len, name_len = struct.unpack_from(format, buffer(data))
@@ -63,8 +63,8 @@ def fix_addin():
                     logging.info('Rescued Word addin from Resiliency')
                     break
                 index += 1
-            except WindowsError:
-                break
+    except WindowsError:
+        pass
 
 def get_document_text(document):
     return document.Content.Text.replace('\r\n', '\n').replace('\r', '\n').rstrip()
