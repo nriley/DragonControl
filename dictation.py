@@ -61,7 +61,7 @@ def switch_to_app():
 
 def show_app():
     for bundle_identifier in DICTATION_APPS:
-        if appswitch('-hi', bundle_identifier):
+        if appswitch('-Pi', bundle_identifier):
             return appswitch('-si', bundle_identifier)
     return False
 
