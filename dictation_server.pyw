@@ -157,6 +157,8 @@ class DragonService(rpyc.Service):
         documents = word.Documents
         if len(documents) == 0:
             documents.Add()
+        if not documents[0].ActiveWindow.View.FullScreen:
+            documents[0].ActiveWindow.View.FullScreen = True
         autohotkey.run('Activate Word')
 
         wake_display()
