@@ -3,9 +3,11 @@ from ctypes import wintypes
 import natlink
 import os
 import rpyc
+import socket
 import struct
 import subprocess
 import sys
+import time
 import win32api
 import win32clipboard
 import win32con
@@ -224,7 +226,6 @@ def startNatSpeak():
         0, None, natspeak_exe_path,
         '/user "https://sabi.net/dragon/Nicholas Riley (v12)"', '', 0)
 
-    import time
     while not natlink.isNatSpeakRunning():
         time.sleep(1)
 
@@ -273,7 +274,12 @@ if __name__ == '__main__':
     with MicrophoneStateMonitor():
         from rpyc.utils.server import OneShotServer
         while DragonService.should_keep_serving:
-            OneShotServer(DragonService, port=9999).start()
+            try:
+                OneShotServer(DragonService, port=9999, backlog=0).start()
+            except socket.error, e:
+                # XXX attempt to work around socket-already-used issue
+                logging.error('Socket error - retrying in 1s: %s', e)
+                time.sleep(1)
 
         # quit Word - try to clear resource leaks
         Word().Application.Quit(SaveChanges=constants.wdDoNotSaveChanges)
