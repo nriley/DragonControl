@@ -3,7 +3,8 @@
 import dictation
 import sys
 
-__all__ = ['get_text', 'get_rtf', 'set_text', 'set_rtf', 'clear_contents']
+__all__ = ('get_text', 'get_rtf', 'set_text', 'set_rtf', 'clear_contents',
+           'lowercase_first_word')
 
 def get_text():
     with dictation.service as s:
@@ -32,6 +33,10 @@ def set_rtf_clip():
 
 def clear_contents():
     set_text('')
+
+def lowercase_first_word():
+    with dictation.service as s:
+        s.lowercase_first_word_in_word_document()
 
 def get(format=None):
     if format:
