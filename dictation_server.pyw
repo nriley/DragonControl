@@ -214,6 +214,9 @@ class DragonService(rpyc.Service):
             win32clipboard.CloseClipboard()
         word.Selection.Paste()
 
+    def exposed_lowercase_first_word_in_word_document(self):
+        Word().ActiveDocument.Words(1).Case = constants.wdLowerCase
+
     def exposed_stop_server(self):
         DragonService.should_keep_serving = False
 
