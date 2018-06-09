@@ -25,7 +25,7 @@ VM_IP_CACHE_PATH = os.path.join(HOME, '.dragoncontrol_vm_ip')
 def dictation_vm_path():
 	for vm_path in VM_PATHS:
 		if os.path.exists(vm_path):
-			return vm_path
+			return os.path.realpath(vm_path)
 
 	print >> sys.stderr, 'Dictation VM not found at any of these locations:'
 	for vm_path in VM_PATHS:
