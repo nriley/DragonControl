@@ -13,7 +13,7 @@ Complete the NatLink installation and configure it as follows (assuming you don'
 >pip install rpyc==3.3.0
 ```
 
-Check out DragonControl to `C:\NatLink\DragonControl` on the Windows side.
+`git clone` DragonControl to `C:\NatLink\DragonControl` on the Windows side.
 
 Add a shortcut to `dictation_server.pyw` to your `Startup` directory.
 
@@ -25,7 +25,7 @@ Run `dictation_server.pyw` from the command line to make sure it works.
 
 ### Install on Mac
 
-Check out DragonControl to `~/Documents/Development/DragonControl` on the Mac side.
+`git clone` DragonControl to `~/Documents/Development/DragonControl` on the Mac side.
 
 ```
 % sudo -s
