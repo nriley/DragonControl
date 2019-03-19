@@ -10,7 +10,7 @@ Complete the NatLink installation and configure it as follows (assuming you don'
 - Disable NatLink (Vocola and Unimacro will automatically be disabled).
 
 ```
->pip install rpyc
+>pip install rpyc==3.3.0
 ```
 
 Check out DragonControl to `C:\NatLink\DragonControl` on the Windows side.
@@ -36,11 +36,19 @@ Check out DragonControl to `~/Documents/Development/DragonControl` on the Mac si
 % cd ~/Documents/Development/DragonControl
 % virtualenv .
 % source bin/activate
-(DragonControl) % pip install py2app rpyc
+(DragonControl) % pip install py2app rpyc==3.3.0
 (DragonControl) % python setup.py py2app -A
+(DragonControl) % deactivate
+% cd ~/Library/Services
+% ln -s '../../Documents/Development/DragonControl/dist/Transfer Dictation.service'
+% open 'Transfer Dictation.service'
 ```
 
+I need to get all the DragonControl Python scripts setuptools-ized so they get generated shebang lines; unfortunately, for the moment you will need to edit the shebang (`#!`) lines at the top of each script to reflect the path to your home directory.
+
 ### Suggested script keyboard equivalents
+
+If you're using FastScripts, make aliases (not symbolic links) to the scripts you use; here's how I name and activate them, for example.
 
 |               Script              | Keyboard | Keypad |
 | --------------------------------- | -------- | ------ |
