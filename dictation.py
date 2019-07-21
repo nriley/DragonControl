@@ -24,8 +24,7 @@ class _Service(object):
                 self.connection = rpyc.connect(self.ip_address, 9999)
             self.connection.ping(timeout=1)
         except:
-            try: self.close()
-            except: pass
+            self.close()
             if vm.guest_ip_address(use_cached=False) != self.ip_address:
                 # Transfer Dictation can stick around through server restarts
                 # should repeat at most once
@@ -40,8 +39,9 @@ class _Service(object):
         return self.connection.root
 
     def close(self):
-        self.connection.close()
-        self.connection = None
+        if self.connection:
+            self.connection.close()
+            self.connection = None
 
     def __exit__(self, *exc_info):
         self.nesting_level -= 1
