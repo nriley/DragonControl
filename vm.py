@@ -174,3 +174,7 @@ if __name__ == '__main__':
 		unpause()
 	elif sys.argv[1] == 'update_jump':
 		update_jump(sys.argv[2])
+	elif sys.argv[1] == 'guest_ip_address_cached':
+		print guest_ip_address(use_cached=True)
+	elif sys.argv[1] == 'guest_ip_address_uncached':
+		print guest_ip_address(use_cached=False)
