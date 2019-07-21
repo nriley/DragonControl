@@ -159,8 +159,9 @@ class DragonService(rpyc.Service):
         documents = word.Documents
         if len(documents) == 0:
             documents.Add()
-        if not documents[0].ActiveWindow.View.FullScreen:
-            documents[0].ActiveWindow.View.FullScreen = True
+        # XXX Newer win32com doesn't generate __getitem__ for Documents?
+        if not documents.Item(1).ActiveWindow.View.FullScreen:
+            documents.Item(1).ActiveWindow.View.FullScreen = True
         autohotkey.run('Activate Word')
 
         wake_display()
