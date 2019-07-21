@@ -90,7 +90,7 @@ class WaitNotifier(object):
 
 VMRUN_PATH = os.path.join(
 	output('/usr/local/bin/launch', '-ni', 'com.vmware.fusion'),
-		   'Contents', 'Library', 'vmrun')
+    'Contents', 'Library', 'vmrun')
 def vmrun(*args):
 	# vmrun hangs otherwise: https://github.com/mitchellh/vagrant/issues/3426
 	# (my umask is typically 077)
