@@ -124,7 +124,7 @@ def start():
 	# start or unpause VM if needed
 	vmx_paths = vmrun('list')
 	if any(vmx_path.startswith(VM_PATH) for vmx_path in vmx_paths):
-		vmrun('unpause') # no way I know of to check if the VM is paused
+		vmrun('unpause')  # no way I know of to check if the VM is paused
 	else:
 		notify('Starting virtual machine')
 		vmrun('start', 'nogui')
@@ -153,7 +153,7 @@ def guest_ip_address(use_cached=True):
 				if address != 'unknown':
 					file(VM_IP_CACHE_PATH, 'w').write(address)
 					return address
-			elif returncode is not None: # VM likely not running
+			elif returncode is not None:  # VM likely not running
 				if use_cached:
 					break
 				raise subprocess.CalledProcessError(returncode, vmrun_cmd,
